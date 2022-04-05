@@ -9,7 +9,7 @@ socket.on('connect', () => {
 })
 socket.on('message', (data) => {
     const { cmd, username } = data
-    console.log(username + ': ' + cmd.split('\n')[0]);
+    console.log(username + ': ' + cmd);
 })
 repl.start({
     prompt: '',
