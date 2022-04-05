@@ -1,15 +1,14 @@
 const socket = require('socket.io-client')('http://localhost:3000'); //communique sur l'adresse qui dans le server socket
 const repl = require('repl'); // permet de créer un terminal
 
-socket.on('disconnect', function() {
+socket.on('disconnect', () => {
     socket.emit('disconnect')
 });
 socket.on('connect', () => {
     console.log('=== demarrage du chat ===')
 })
 socket.on('message', (data) => {
-    const { cmd, username } = data
-    console.log(username + ': ' + cmd);
+    console.log(data);
 })
 repl.start({
     prompt: '',
