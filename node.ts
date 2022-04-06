@@ -11,7 +11,7 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('message', evt)
     })
 })
-io.on('disconnect', (evt) => {
+io.on('disconnect', () => {
     console.log('disconnected')
 })
 http.listen(PORT, () => console.log(`server listening on port: ${PORT}`))

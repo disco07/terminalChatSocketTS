@@ -4,8 +4,8 @@
   "description": "chat with typescript and socket.io",
   "main": "index.js",
   "scripts": {
-    "start": "node chat-node.ts",
-    "client": "node chat-client.ts"
+    "start": "node node.ts",
+    "client": "node client.ts"
   },
   "author": "@dkone",
   "license": "ISC",
