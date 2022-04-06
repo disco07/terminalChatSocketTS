@@ -1,5 +1,4 @@
 ### Node template
 
 # Dependency directories
-node_modules/
-
+/node_modules
