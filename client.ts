@@ -1,6 +1,10 @@
 const socket = require('socket.io-client')('http://localhost:3000'); //communique sur l'adresse qui dans le server socket
 const repl = require('repl'); // permet de créer un terminal
 
+console.log(process.argv[2])
+
+let username = null
+
 // ('disconnect') evenement natif de socket io qui permet de détecter si un user est deconnecté
 socket.on('disconnect', () => {
     // socket.emit permet d'envoyer un donnée, alors que socket.on permet de recevoir
@@ -14,13 +18,14 @@ socket.on('connect', () => {
 
 // ('message') evenement que j'ai crée, il permet d'envoyé des messages
 socket.on('message', (data) => {
-    console.log(data);
+    const { cmd, username } = data
+    console.log(username + ': ' + cmd.split('\n')[0]);
 })
 
 // repl permet de demarrer le chat dans un terminal
 repl.start({
-    prompt: '',
+    prompt: '>',
     eval: (cmd) => {
-        socket.send(cmd)
+        socket.send({ cmd, username })
     }
 })

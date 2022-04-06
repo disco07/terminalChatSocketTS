@@ -1,5 +1,19 @@
 const http = require('http').createServer();
 const io = require('socket.io')(http);
+const mysql = require('mysql');
+const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'test'
+});
+connection.connect(function(err){
+    if(err){
+        console.error('Impossible de se connecter ', err);
+    }
+});
+
+
 const PORT = 3000
 
 io.on('connection', (socket) => {
