@@ -1,26 +1,42 @@
-const socket = require('socket.io-client')('http://localhost:3000'); //communique sur l'adresse qui dans le server socket
-const repl = require('repl'); // permet de créer un terminal
+const readline = require('readline');
+const rl = readline.createInterface({ input: process.stdin,  output: process.stdout });
 
-// ('disconnect') evenement natif de socket io qui permet de détecter si un user est deconnecté
-socket.on('disconnect', () => {
-    // socket.emit permet d'envoyer un donnée, alors que socket.on permet de recevoir
-    socket.emit('disconnect')
-});
+rl.question('Votre nom ? ', (name) => {
+    const socket = require('socket.io-client')('http://localhost:3000')
+    let connected = false;
 
-// ('connect') evenement natif de socket io qui permet de détecter si un user est connecté
-socket.on('connect', () => {
-    console.log('=== demarrage du chat ===')
-})
+    socket.on('disconnect', () => {
+        socket.emit('disconnect')
+    });
 
-// ('message') evenement que j'ai crée, il permet d'envoyé des messages
-socket.on('message', (data) => {
-    console.log(data);
-})
-
-// repl permet de demarrer le chat dans un terminal
-repl.start({
-    prompt: '',
-    eval: (cmd) => {
-        socket.send(cmd)
+    const sendMsg = () => {
+        rl.question('> ', (message) => {
+            console.log(`Vous: ${message}`);
+            socket.emit('chatmessage', `${name}: ${message}`);
+            sendMsg();
+        });
     }
+
+    socket.on('logged', (boolean) => {
+        console.log(boolean)
+        connected = boolean
+
+        if (connected) {
+            console.log('=== demarrage du chat ===')
+            sendMsg();
+        }
+    })
+
+    socket.on('connect', () => {
+        if (connected) {
+            console.log('=== demarrage du chat ===')
+            sendMsg();
+        } else {
+            socket.emit('login', `${name}`);
+        }
+    })
+
+    socket.on('chatmessage', (message) => {
+        console.log(message);
+    });
 })
