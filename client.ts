@@ -32,6 +32,11 @@ rl.question('Votre nom ? ', (name) => {
         }
     })
     socket.on('error', (err) => console.log(err))
+    socket.on('newmsg', (message) => {
+        message.forEach(msg => {
+            console.log(msg.user.username, ':', msg.message)
+        })
+    })
     socket.on('newusr', (me) => {
         mesInfos = {
             username: me.username,

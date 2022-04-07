@@ -37,7 +37,7 @@ io.on('connection', (socket) => {
             mesInfos.id,
             message,
         ], (err) => {
-            if(err){
+            if (err) {
                 console.log(err)
                 socket.emit('error', err.code)
             }
@@ -59,6 +59,28 @@ io.on('connection', (socket) => {
                 socket.emit('logged', true);
                 users[me.id] = me;
                 io.to(socket.id).emit('newusr', me);
+
+                connection.query('SELECT users.id as user_id, users.username, messages.message FROM messages LEFT JOIN users ON users.id = messages.user_id ORDER BY messages.id DESC LIMIT 10', (err, rows) => {
+                    if (err) {
+                        socket.emit('error', err.code);
+                    } else {
+                        let messages = [];
+                        rows.reverse(); // On veut les plus vieux en premier
+                        for (let k in rows) {
+                            let row = rows[k];
+                            let message = {
+                                message: row.message,
+                                user: {
+                                    id: row.user_id,
+                                    username: row.username,
+                                }
+                            };
+                            messages.push(message)
+                        }
+                        io.to(socket.id).emit('newmsg', messages)
+                    }
+                })
+
             } else {
                 io.to(socket.id).emit('error', 'Aucun utilisateur trouvé');
                 socket.emit('logged', false);
