@@ -5,6 +5,11 @@ rl.question('Votre nom ? ', (name) => {
     const socket = require('socket.io-client')('http://localhost:3000')
     let connected = false;
 
+    let mesInfos = {
+        username: '',
+        id: 0
+    }
+
     socket.on('disconnect', () => {
         socket.emit('disconnect')
     });
@@ -12,7 +17,7 @@ rl.question('Votre nom ? ', (name) => {
     const sendMsg = () => {
         rl.question('> ', (message) => {
             console.log(`Vous: ${message}`);
-            socket.emit('chatmessage', ({name, message}));
+            socket.emit('chatmessage', ({name, message}), mesInfos);
             sendMsg();
         });
     }
@@ -27,7 +32,12 @@ rl.question('Votre nom ? ', (name) => {
         }
     })
     socket.on('error', (err) => console.log(err))
-    socket.on('newusr', (err) => console.log(err))
+    socket.on('newusr', (me) => {
+        mesInfos = {
+            username: me.username,
+            id: me.id,
+        };
+    })
 
     socket.on('connect', () => {
         if (connected) {
@@ -38,7 +48,7 @@ rl.question('Votre nom ? ', (name) => {
         }
     })
 
-    socket.on('chatmessage', ({name, message}) => {
-        console.log(name, ':', message);
+    socket.on('chatmessage', (data) => {
+        console.log(data.username, ':', data.message);
     });
 })

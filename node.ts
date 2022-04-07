@@ -27,14 +27,14 @@ io.on('connection', (socket) => {
 
     let eventName = 'chatmessage';
 
-    let broadcast = (msg) => socket.broadcast.emit(eventName, msg);
+    let broadcast = (data) => socket.broadcast.emit(eventName, data);
 
-    socket.on(eventName, ({name, message}) => {
-        console.log('message: ' + message);
-        setTimeout(broadcast, 1000, {name, message});
+    socket.on(eventName, ({name, message}, mesInfos) => {
+        console.log(message, mesInfos);
+        setTimeout(broadcast, 1000, [{username: mesInfos.username}, {message}]);
 
         connection.query('INSERT INTO messages SET user_id = ?, message = ?', [
-            name,
+            mesInfos.id,
             message,
         ], (err) => {
             if(err){
