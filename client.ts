@@ -1,31 +1,59 @@
-const socket = require('socket.io-client')('http://localhost:3000'); //communique sur l'adresse qui dans le server socket
-const repl = require('repl'); // permet de créer un terminal
+const readline = require('readline');
+const rl = readline.createInterface({ input: process.stdin,  output: process.stdout });
 
-console.log(process.argv[2])
+rl.question('Votre nom ? ', (name) => {
+    const socket = require('socket.io-client')('http://localhost:3000')
+    let connected = false;
 
-let username = null
-
-// ('disconnect') evenement natif de socket io qui permet de détecter si un user est deconnecté
-socket.on('disconnect', () => {
-    // socket.emit permet d'envoyer un donnée, alors que socket.on permet de recevoir
-    socket.emit('disconnect')
-});
-
-// ('connect') evenement natif de socket io qui permet de détecter si un user est connecté
-socket.on('connect', () => {
-    console.log('=== demarrage du chat ===')
-})
-
-// ('message') evenement que j'ai crée, il permet d'envoyé des messages
-socket.on('message', (data) => {
-    const { cmd, username } = data
-    console.log(username + ': ' + cmd.split('\n')[0]);
-})
-
-// repl permet de demarrer le chat dans un terminal
-repl.start({
-    prompt: '>',
-    eval: (cmd) => {
-        socket.send({ cmd, username })
+    let mesInfos = {
+        username: '',
+        id: 0
     }
+
+    socket.on('disconnect', () => {
+        socket.emit('disconnect')
+    });
+
+    const sendMsg = () => {
+        rl.question('> ', (message) => {
+            console.log(`Vous: ${message}`);
+            socket.emit('chatmessage', ({name, message}), mesInfos);
+            sendMsg();
+        });
+    }
+
+    socket.on('logged', (boolean) => {
+        console.log(boolean)
+        connected = boolean
+
+        if (connected) {
+            console.log('=== demarrage du chat ===')
+            sendMsg();
+        }
+    })
+    socket.on('error', (err) => console.log(err))
+    socket.on('newmsg', (message) => {
+        message.forEach(msg => {
+            console.log(msg.user.username, ':', msg.message)
+        })
+    })
+    socket.on('newusr', (me) => {
+        mesInfos = {
+            username: me.username,
+            id: me.id,
+        };
+    })
+
+    socket.on('connect', () => {
+        if (connected) {
+            console.log('=== demarrage du chat ===')
+            sendMsg();
+        } else {
+            socket.emit('login', `${name}`);
+        }
+    })
+
+    socket.on('chatmessage', (data) => {
+        console.log(data.username, ':', data.message);
+    });
 })

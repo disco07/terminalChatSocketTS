@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="a967947d-5071-4f72-a8ad-41e4a2a06f0e" name="mysvps">
+        <fileTransfer rootFolder="/home/ubuntu/partaudit-back/server" accessType="SFTP" host="54.37.159.122" port="22" sshConfigId="43a3e562-4cff-4087-85c1-841e908c3720" sshConfig="ubuntu@54.37.159.122:22 key" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
