@@ -12,7 +12,7 @@ rl.question('Votre nom ? ', (name) => {
     const sendMsg = () => {
         rl.question('> ', (message) => {
             console.log(`Vous: ${message}`);
-            socket.emit('chatmessage', `${name}: ${message}`);
+            socket.emit('chatmessage', ({name, message}));
             sendMsg();
         });
     }
@@ -26,6 +26,7 @@ rl.question('Votre nom ? ', (name) => {
             sendMsg();
         }
     })
+    socket.on('error', (err) => console.log(err))
 
     socket.on('connect', () => {
         if (connected) {
@@ -36,7 +37,7 @@ rl.question('Votre nom ? ', (name) => {
         }
     })
 
-    socket.on('chatmessage', (message) => {
-        console.log(message);
+    socket.on('chatmessage', ({name, message}) => {
+        console.log(name, ':', message);
     });
 })

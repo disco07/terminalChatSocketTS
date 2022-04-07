@@ -29,19 +29,28 @@ io.on('connection', (socket) => {
 
     let broadcast = (msg) => socket.broadcast.emit(eventName, msg);
 
-    socket.on(eventName, (msg) => {
-        console.log('message: ' + msg);
-        // broadcast to other clients after 1.5 seconds
-        setTimeout(broadcast, 1500, msg);
+    socket.on(eventName, ({name, message}) => {
+        console.log('message: ' + message);
+        setTimeout(broadcast, 1000, {name, message});
+
+        connection.query('INSERT INTO messages SET user_id = ?, message = ?', [
+            name,
+            message,
+        ], (err) => {
+            if(err){
+                console.log(err)
+                socket.emit('error', err.code)
+            }
+        })
     });
 
-    socket.on('login', (user) => {
-        connection.query('SELECT * FROM users WHERE id = ?', [user], (err, rows, fields) => {
+    socket.on('login', (userId) => {
+        connection.query('SELECT * FROM users WHERE id = ?', [userId], (err, rows, fields) => {
             console.log(rows, fields)
             if (err) {
                 socket.emit('error', err.code);
                 socket.emit('logged', false);
-            }else if(rows.length === 1 && rows[0].token === user.token) {
+            } else if (rows.length === 1) {
                 me = {
                     username: rows[0].username,
                     id: rows[0].id,
@@ -50,7 +59,7 @@ io.on('connection', (socket) => {
                 users[me.id] = me;
                 io.sockets.emit('newusr', me);
             } else {
-                io.sockets.emit('error', 'Aucun utilisateur ne correspond');
+                io.sockets.emit('error', 'Aucun utilisateur trouvé');
                 socket.emit('logged', false);
             }
         })
