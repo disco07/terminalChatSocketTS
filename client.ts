@@ -27,6 +27,7 @@ rl.question('Votre nom ? ', (name) => {
         }
     })
     socket.on('error', (err) => console.log(err))
+    socket.on('newusr', (err) => console.log(err))
 
     socket.on('connect', () => {
         if (connected) {

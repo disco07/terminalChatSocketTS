@@ -50,6 +50,7 @@ io.on('connection', (socket) => {
             if (err) {
                 socket.emit('error', err.code);
                 socket.emit('logged', false);
+                io.to(socket.id).emit('error', 'Aucun utilisateur trouvé');
             } else if (rows.length === 1) {
                 me = {
                     username: rows[0].username,
@@ -57,9 +58,9 @@ io.on('connection', (socket) => {
                 };
                 socket.emit('logged', true);
                 users[me.id] = me;
-                io.sockets.emit('newusr', me);
+                io.to(socket.id).emit('newusr', me);
             } else {
-                io.sockets.emit('error', 'Aucun utilisateur trouvé');
+                io.to(socket.id).emit('error', 'Aucun utilisateur trouvé');
                 socket.emit('logged', false);
             }
         })
