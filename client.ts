@@ -54,6 +54,8 @@ rl.question('Votre nom ? ', (name) => {
     })
 
     socket.on('chatmessage', (data) => {
-        console.log(data.username, ':', data.message);
+        let username = data.filter(d => d.username)
+        let message = data.filter(d => d.message)
+        console.log(username[0].username, ':', message[0].message);
     });
 })
