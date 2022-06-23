@@ -2,6 +2,14 @@ const http = require('http').createServer();
 const io = require('socket.io')(http);
 const mysql = require('mysql');
 
+interface IMessage {
+    message: string;
+    user: {
+        id: number
+        username: string
+    }
+}
+
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -15,13 +23,13 @@ connection.connect((err) => {
     }
 });
 
-const PORT = 3000
-const users = {}
+const PORT: number = 3000
+const users: {} = {}
 
 io.on('connection', (socket) => {
     console.log('connected')
 
-    let me = {
+    let me: {username: string, id: number} = {
         username: '',
         id: 0
     }
@@ -69,7 +77,7 @@ io.on('connection', (socket) => {
                         rows.reverse(); // On veut les plus vieux en premier
                         for (let k in rows) {
                             let row = rows[k];
-                            let message = {
+                            let message: IMessage = {
                                 message: row.message,
                                 user: {
                                     id: row.user_id,

@@ -1,11 +1,16 @@
 const readline = require('readline');
 const rl = readline.createInterface({ input: process.stdin,  output: process.stdout });
 
+interface IMesInfos {
+    username?: string
+    id?: number
+}
+
 rl.question('Votre nom ? ', (name) => {
     const socket = require('socket.io-client')('http://localhost:3000')
     let connected = false;
 
-    let mesInfos = {
+    let mesInfos: IMesInfos = {
         username: '',
         id: 0
     }
@@ -54,8 +59,8 @@ rl.question('Votre nom ? ', (name) => {
     })
 
     socket.on('chatmessage', (data) => {
-        let username = data.filter(d => d.username)
-        let message = data.filter(d => d.message)
+        let username: any = data.filter(d => d.username)
+        let message: any = data.filter(d => d.message)
         console.log(username[0].username, ':', message[0].message);
     });
 })
