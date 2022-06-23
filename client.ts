@@ -6,9 +6,17 @@ interface IMesInfos {
     id?: number
 }
 
-rl.question('Votre nom ? ', (name) => {
+interface IMessage {
+    message: string;
+    user: {
+        id: number
+        username: string
+    }
+}
+
+rl.question('Votre nom ? ', (name: string) => {
     const socket = require('socket.io-client')('http://localhost:3000')
-    let connected = false;
+    let connected: boolean = false;
 
     let mesInfos: IMesInfos = {
         username: '',
@@ -20,14 +28,14 @@ rl.question('Votre nom ? ', (name) => {
     });
 
     const sendMsg = () => {
-        rl.question('> ', (message) => {
+        rl.question('> ', (message: string) => {
             console.log(`Vous: ${message}`);
             socket.emit('chatmessage', ({name, message}), mesInfos);
             sendMsg();
         });
     }
 
-    socket.on('logged', (boolean) => {
+    socket.on('logged', (boolean: boolean) => {
         console.log(boolean)
         connected = boolean
 
@@ -37,12 +45,12 @@ rl.question('Votre nom ? ', (name) => {
         }
     })
     socket.on('error', (err) => console.log(err))
-    socket.on('newmsg', (message) => {
+    socket.on('newmsg', (message: IMessage[]) => {
         message.forEach(msg => {
             console.log(msg.user.username, ':', msg.message)
         })
     })
-    socket.on('newusr', (me) => {
+    socket.on('newusr', (me: {username: string, id: number}) => {
         mesInfos = {
             username: me.username,
             id: me.id,
