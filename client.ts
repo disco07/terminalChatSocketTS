@@ -14,6 +14,11 @@ interface IMessage {
     }
 }
 
+interface IData {
+    username: string
+    message: string
+}
+
 rl.question('Votre nom ? ', (name: string) => {
     const socket = require('socket.io-client')('http://localhost:3000')
     let connected: boolean = false;
@@ -66,7 +71,7 @@ rl.question('Votre nom ? ', (name: string) => {
         }
     })
 
-    socket.on('chatmessage', (data) => {
+    socket.on('chatmessage', (data: IData[]) => {
         let username: any = data.filter(d => d.username)
         let message: any = data.filter(d => d.message)
         console.log(username[0].username, ':', message[0].message);

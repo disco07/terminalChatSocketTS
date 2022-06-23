@@ -10,6 +10,11 @@ interface IMessage {
     }
 }
 
+interface IMesInfos {
+    username?: string
+    id?: number
+}
+
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -38,7 +43,7 @@ io.on('connection', (socket) => {
 
     let broadcast = (data) => socket.broadcast.emit(eventName, data);
 
-    socket.on(eventName, ({name, message}, mesInfos) => {
+    socket.on(eventName, ({name, message}: any, mesInfos: IMesInfos) => {
         console.log(message, mesInfos);
         setTimeout(broadcast, 1000, [{username: mesInfos.username}, {message}]);
 
@@ -53,7 +58,7 @@ io.on('connection', (socket) => {
         })
     });
 
-    socket.on('login', (userId) => {
+    socket.on('login', (userId: number) => {
         connection.query('SELECT * FROM users WHERE id = ?', [userId], (err, rows, fields) => {
             console.log(rows, fields)
             if (err) {
@@ -73,7 +78,7 @@ io.on('connection', (socket) => {
                     if (err) {
                         socket.emit('error', err.code);
                     } else {
-                        let messages = [];
+                        let messages: IMessage[] = [];
                         rows.reverse(); // On veut les plus vieux en premier
                         for (let k in rows) {
                             let row = rows[k];
